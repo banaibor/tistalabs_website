@@ -1,0 +1,10 @@
+/* Right-side section navigation inspired by Infosys */
+.sidebar-nav { position: fixed; right: 24px; top: 50%; transform: translateY(-50%); z-index: 1200; pointer-events: none; }
+.sidebar-nav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+.sidebar-nav .sidebar-item { pointer-events: auto; background: transparent; border: 0; padding: 6px 12px; display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,0.85); font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; position: relative; isolation: isolate; }
+.sidebar-nav .dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.55); box-shadow: 0 0 0 2px rgba(0,0,0,0.35) inset; transition: all 0.25s ease; }
+.sidebar-nav li.active .dot, .sidebar-nav .sidebar-item:hover .dot, .sidebar-nav .sidebar-item:focus .dot { background: #22d3ee; border-color: #22d3ee; box-shadow: 0 0 12px rgba(34,211,238,0.6); }
+.sidebar-nav .label { opacity: 0; transform: translateX(6px); transition: all 0.25s ease; white-space: nowrap; background: rgba(0,0,0,0.6); padding: 6px 10px; border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; box-shadow: 0 6px 20px rgba(0,0,0,0.25); }
+.sidebar-nav li.active .label, .sidebar-nav .sidebar-item:hover .label, .sidebar-nav .sidebar-item:focus .label { opacity: 1; transform: translateX(0); }
+@media (max-width: 900px) { .sidebar-nav { right: 12px; } .sidebar-nav .label { display: none; } }
+@media (max-height: 600px) { .sidebar-nav { top: auto; bottom: 24px; transform: none; } }

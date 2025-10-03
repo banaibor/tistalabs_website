@@ -1,0 +1,13 @@
+/* moved from components/Footer.css */
+.footer { background: #000; border-top: 1px solid rgba(255, 255, 255, 0.1); padding: 4rem 2rem 2rem; }
+.footer-container { max-width: 1400px; margin: 0 auto; }
+.footer-content { display: grid; grid-template-columns: 2fr 3fr; gap: 4rem; margin-bottom: 3rem; }
+.footer-brand h3 { font-size: 1.5rem; font-weight: 700; letter-spacing: 0.1em; background: linear-gradient(45deg, #00d4ff, #7b2ff7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 1rem; }
+.footer-brand p { color: rgba(255, 255, 255, 0.75); line-height: 1.6; }
+.footer-links { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+.footer-column h4 { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; color: #fff; }
+.footer-column a { display: block; color: rgba(255, 255, 255, 0.75); text-decoration: none; margin-bottom: 0.75rem; transition: color 0.3s ease; }
+.footer-column a:hover { color: #22d3ee; }
+.footer-bottom { padding-top: 2rem; border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.footer-bottom p { color: rgba(255, 255, 255, 0.65); font-size: 0.9rem; }
+@media (max-width: 768px) { .footer { padding: 3rem 1rem 1.5rem; } .footer-content { grid-template-columns: 1fr; gap: 2rem; } .footer-links { grid-template-columns: 1fr; gap: 1.5rem; } .footer-bottom { flex-direction: column; text-align: center; } }

@@ -1,0 +1,17 @@
+/* moved from components/About.css */
+.about { min-height: 100vh; padding: 6rem 2rem; background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.9)), url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80') center/cover; position: relative; display: flex; align-items: center; justify-content: center; }
+.about::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(167, 139, 250, 0.5), transparent); }
+.about-container { max-width: 1200px; margin: 0 auto; width: 100%; }
+.about-content { text-align: center; opacity: 1; will-change: transform, opacity; }
+.about h2 { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 700; margin-bottom: 2.5rem; background: linear-gradient(135deg, #fff 0%, #a78bfa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.about-text { max-width: 900px; margin: 0 auto 3.5rem; padding: 0 1rem; }
+.about-text p { font-size: 1.15rem; line-height: 1.9; color: rgba(255, 255, 255, 0.9); margin-bottom: 1.5rem; }
+.about-text strong { color: #22d3ee; font-weight: 600; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2rem; margin-top: 4rem; }
+.stat-card { padding: 2.5rem 2rem; background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.03) 100%); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); backdrop-filter: blur(10px); position: relative; overflow: hidden; }
+.stat-card::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at top, rgba(167, 139, 250, 0.1), transparent 70%); opacity: 0; transition: opacity 0.5s ease; }
+.stat-card:hover { background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%); border-color: rgba(167, 139, 250, 0.5); transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); }
+.stat-card:hover::before { opacity: 1; }
+.stat-number { font-size: 3.5rem; font-weight: 800; background: linear-gradient(135deg, #22d3ee, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 0.5rem; text-shadow: 0 0 40px rgba(34, 211, 238, 0.3); }
+.stat-label { font-size: 1rem; color: rgba(255, 255, 255, 0.85); text-transform: uppercase; letter-spacing: 0.1em; }
+@media (max-width: 768px) { .about { padding: 4rem 1rem; } .about h2 { font-size: clamp(2rem, 8vw, 3rem); margin-bottom: 2rem; } .about-text { margin-bottom: 2.5rem; } .about-text p { font-size: 1rem; line-height: 1.8; } .stats-grid { grid-template-columns: 1fr; gap: 1.5rem; max-width: 400px; margin: 0 auto; } .stat-card { padding: 2rem 1.5rem; } .stat-number { font-size: 3rem; } }

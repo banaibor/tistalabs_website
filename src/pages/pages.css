@@ -1,0 +1,70 @@
+/* Shared page styles for routed pages */
+.page {
+  min-height: 100vh;
+  padding: 120px 2rem 80px; /* account for fixed navbar */
+  color: #fff;
+  background: radial-gradient(1200px 600px at 80% -10%, rgba(167,139,250,0.15), transparent 45%),
+              radial-gradient(1000px 600px at 0% 20%, rgba(34,211,238,0.12), transparent 40%),
+              #000;
+}
+
+.page-hero {
+  max-width: 1100px;
+  margin: 0 auto 2.5rem;
+}
+
+.page-hero h1 {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 900;
+  line-height: 1.05;
+  margin: 0 0 0.75rem 0;
+  text-transform: uppercase;
+}
+
+.page-hero p {
+  max-width: 700px;
+  color: rgba(255,255,255,0.85);
+}
+
+.page-section {
+  max-width: 1100px;
+  margin: 0 auto 3rem;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.2rem;
+}
+
+.card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 1.5rem;
+}
+
+.bullet-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.6rem 1rem;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.metric {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.metric .num {
+  display: block;
+  font-weight: 900;
+  font-size: 2rem;
+  margin-bottom: 0.25rem;
+}

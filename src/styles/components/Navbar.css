@@ -1,0 +1,17 @@
+/* original content preserved */
+.navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 1.5rem 0; transition: all 0.3s ease; }
+.navbar.scrolled { background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(10px); padding: 1rem 0; box-shadow: 0 2px 20px rgba(0, 212, 255, 0.1); }
+.navbar-container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; width: 100%; }
+.logo { display: flex; align-items: center; }
+.logo .animated-logo-container { padding: 6px 15px; min-width: 160px; min-height: 35px; background: linear-gradient(135deg, rgba(20, 25, 35, 0.6) 0%, rgba(30, 35, 45, 0.7) 100%); border: 1px solid rgba(34, 211, 238, 0.15); }
+.logo .logo-text { font-size: 1rem; gap: 1px; }
+.logo .baby-groot { width: 12px; height: 16px; top: -18px; }
+.logo .groot-head { width: 10px; height: 8px; }
+.nav-links { display: flex; gap: 2rem; align-items: center; }
+.nav-links a { color: #fff; text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: color 0.3s ease; position: relative; }
+.nav-links a:not(.contact-btn):hover { color: #22d3ee; }
+.nav-links a:not(.contact-btn)::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 2px; background: #22d3ee; transition: width 0.3s ease; }
+.nav-links a:not(.contact-btn):hover::after { width: 100%; }
+.contact-btn { padding: 0.6rem 1.5rem; background: linear-gradient(45deg, #22d3ee, #a78bfa); border-radius: 50px; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.contact-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(34, 211, 238, 0.4); }
+@media (max-width: 768px) { .navbar-container { padding: 0 1rem; } .nav-links { gap: 1rem; } .nav-links a { font-size: 0.85rem; } .logo { font-size: 1.2rem; } }
