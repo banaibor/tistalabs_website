@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import '../styles/components/SidebarNav.css';
 
 type Section = {
@@ -18,31 +18,43 @@ const sections: Section[] = [
 const SidebarNav = () => {
   const [active, setActive] = useState<string>('home');
 
-  const observer = useMemo(() => {
-    if (typeof window === 'undefined') return null;
-    const onIntersect: IntersectionObserverCallback = (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const id = entry.target.getAttribute('id');
-          if (id) setActive(id);
-        }
-      });
-    };
-    // Using threshold ~0.55 so a section becomes active when majority is in view
-    return new IntersectionObserver(onIntersect, { threshold: 0.55 });
-  }, []);
-
   useEffect(() => {
-    if (!observer) return;
-    const targets = sections
-      .map((s) => document.getElementById(s.id))
-      .filter(Boolean) as Element[];
-    targets.forEach((el) => observer.observe(el));
-    return () => {
-      targets.forEach((el) => observer.unobserve(el));
-      observer.disconnect();
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + window.innerHeight / 2;
+      
+      // Find which section is currently in view
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = document.getElementById(sections[i].id);
+        if (section) {
+          const sectionTop = section.offsetTop;
+          if (scrollPosition >= sectionTop) {
+            setActive(sections[i].id);
+            break;
+          }
+        }
+      }
     };
-  }, [observer]);
+
+    // Initial check
+    handleScroll();
+    
+    // Add scroll listener with throttle
+    let timeoutId: number | null = null;
+    const throttledScroll = () => {
+      if (timeoutId === null) {
+        timeoutId = window.setTimeout(() => {
+          handleScroll();
+          timeoutId = null;
+        }, 100);
+      }
+    };
+
+    window.addEventListener('scroll', throttledScroll);
+    return () => {
+      window.removeEventListener('scroll', throttledScroll);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, []);
 
   const scrollWithOffset = (id: string) => {
     const el = document.getElementById(id);

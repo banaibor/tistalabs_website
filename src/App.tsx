@@ -13,6 +13,7 @@ import Infrastructure from './pages/Infrastructure.tsx';
 import ServiceDetail from './pages/ServiceDetail.tsx';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
+import { gsap } from 'gsap';
 import './App.css';
 
 function ScrollOnRouteState() {
@@ -32,32 +33,47 @@ function ScrollOnRouteState() {
 }
 
 function App() {
+  const location = useLocation();
+  
+  // Clear transforms when navigating (including back button)
+  useEffect(() => {
+    const content = document.querySelector('.app-content');
+    if (content) {
+      gsap.set(content, { clearProps: 'all' });
+    }
+    gsap.set(document.body, { clearProps: 'perspective' });
+  }, [location.pathname]);
+  
   return (
-    <div className="app">
+    <>
       <Navbar />
-      <ScrollOnRouteState />
-      <Routes>
-        <Route
-          path="/"
-          element={(
-            <>
-              <SidebarNav />
-              <Hero />
-              <Services />
-              <AISection />
-              <AutomationSection />
-              <About />
-              <Contact />
-              <Footer />
-            </>
-          )}
-        />
-        <Route path="/navigate-your-next" element={<NavigateYourNext />} />
-        <Route path="/our-work" element={<OurWork />} />
-        <Route path="/infrastructure" element={<Infrastructure />} />
-        <Route path="/services/:id" element={<ServiceDetail />} />
-      </Routes>
-    </div>
+      <div className="app">
+        <div className="app-content">
+          <ScrollOnRouteState />
+          <Routes>
+            <Route
+              path="/"
+              element={(
+                <>
+                  <SidebarNav />
+                  <Hero />
+                  <Services />
+                  <AISection />
+                  <AutomationSection />
+                  <About />
+                  <Contact />
+                  <Footer />
+                </>
+              )}
+            />
+            <Route path="/navigate-your-next" element={<NavigateYourNext />} />
+            <Route path="/our-work" element={<OurWork />} />
+            <Route path="/infrastructure" element={<Infrastructure />} />
+            <Route path="/services/:id" element={<ServiceDetail />} />
+          </Routes>
+        </div>
+      </div>
+    </>
   );
 }
 

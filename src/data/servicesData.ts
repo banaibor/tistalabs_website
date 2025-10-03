@@ -13,6 +13,7 @@ export interface Service {
   features: string[];
   cta: string;
   icon: IconType;
+  image?: string; // Main service preview image
   // visual sections removed per request
   useCases?: Array<{
     title: string;
@@ -31,6 +32,7 @@ export const servicesData: Service[] = [
     title: 'Web Development',
     headline: 'Building Digital Spaces That Work Smarter',
     description: 'Your website isn\'t just a digital address—it\'s an active organism. Our developers design interfaces that respond, backends that think, and ecosystems that adapt with your business.',
+    image: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1400&q=80',
     features: [
       'Front-end development (UI, accessibility, performance)',
       'Back-end development (APIs, auth, business logic)',
@@ -88,6 +90,7 @@ export const servicesData: Service[] = [
     title: 'Mobile App Development',
     headline: 'Your Business, in Everyone\'s Pocket',
     description: 'In a world where people carry expectations in their pockets, we design mobile apps that perform like personal assistants—always ready, always adaptive.',
+    image: 'https://images.unsplash.com/photo-1556745753-b2904692b3cd?auto=format&fit=crop&w=1400&q=80',
     features: [
       'Native iOS & Android',
       'Cross-platform apps (Flutter, React Native, KMP)',
@@ -125,6 +128,7 @@ export const servicesData: Service[] = [
     title: 'Cross-Cutting Services',
     headline: 'Technology That Threads Everything Together',
     description: 'Our cross-cutting services serve as the bloodstream of your technology. They infuse resilience, intelligence, and speed into everything we build.',
+    image: 'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?auto=format&fit=crop&w=1400&q=80',
     features: [
       'Solution discovery & scoping',
       'Cloud, DevOps, and CI/CD',
@@ -157,6 +161,7 @@ export const servicesData: Service[] = [
     title: 'AI & MCP Server Solutions',
     headline: 'Transform Your Business with Next-Generation AI',
     description: 'Advanced AI technologies including Model Context Protocol (MCP) Servers, Custom AI Development, RAG systems, Edge AI Computing, and Agentic AI Workflows.',
+    image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1400&q=80',
     features: [
       'Model Context Protocol (MCP) Servers',
       'Custom AI Development & Multi-modal capabilities',
@@ -187,6 +192,7 @@ export const servicesData: Service[] = [
     title: 'Software Automation & Scripting',
     headline: 'Transform Manual Tasks into Automated Workflows',
     description: 'Expert automation solutions using VBA, Python, PowerShell, JavaScript, and Web Automation to eliminate manual processes and boost productivity.',
+    image: 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=800&auto=format&fit=crop',
     features: [
       'VBA Automation (Excel, Office, macros)',
       'Python Scripting (Selenium, Pandas, APIs)',
@@ -214,6 +220,7 @@ export const servicesData: Service[] = [
     title: 'Kaspersky EDR',
     headline: 'Smart Security for Smarter Threats',
     description: 'Kaspersky Endpoint Detection and Response (EDR) detects, analyzes, and stops advanced attacks at the endpoint level—before they spread across your organization.',
+    image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&auto=format&fit=crop',
     features: [
       'AI-powered threat detection',
       'Automatic investigation & response',

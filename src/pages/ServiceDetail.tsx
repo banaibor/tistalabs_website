@@ -14,16 +14,24 @@ const ServiceDetail = () => {
   const service = servicesData.find(s => s.id === id);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    
+    // Clear any existing transforms from previous pages
+    const appContent = document.querySelector('.app-content');
+    if (appContent) {
+      gsap.set(appContent, { clearProps: 'all' });
+    }
+    gsap.set(document.body, { clearProps: 'perspective' });
+    
     // Reverse-pop from warp origin (photo center) to feel like emerging from the portal
     const origin = location?.state?.warpOrigin as { x: number; y: number } | undefined;
-    const root = document.getElementById('root');
-    if (origin && root) {
+    if (origin && appContent) {
+      // Apply perspective to body but transform to app-content (which doesn't contain navbar)
       gsap.set(document.body, { perspective: 1200 });
       const dx = origin.x / window.innerWidth - 0.5;
       const dy = origin.y / window.innerHeight - 0.5;
       // Start from deep inside the portal (matching the vacuum effect)
-      gsap.set(root, { 
+      gsap.set(appContent, { 
         transformOrigin: `${origin.x}px ${origin.y}px`, 
         scale: 0.05, 
         rotationX: dy * 15, 
@@ -33,7 +41,7 @@ const ServiceDetail = () => {
         filter: 'blur(5px) saturate(1.15) brightness(0.85)' 
       });
       // Explosive expansion from the portal
-      gsap.to(root, { 
+      gsap.to(appContent, { 
         scale: 1, 
         rotationX: 0, 
         rotationY: 0, 
@@ -41,10 +49,23 @@ const ServiceDetail = () => {
         z: 0, 
         filter: 'none', 
         duration: 0.8, 
-        ease: 'power3.out' 
+        ease: 'power3.out',
+        onComplete: () => {
+          // Clear all transforms and perspective after animation
+          gsap.set(document.body, { clearProps: 'perspective' });
+          gsap.set(appContent, { clearProps: 'all' });
+        }
       });
     }
-  }, [id]);
+    
+    // Cleanup function to ensure transforms are cleared
+    return () => {
+      if (appContent) {
+        gsap.set(appContent, { clearProps: 'all' });
+      }
+      gsap.set(document.body, { clearProps: 'perspective' });
+    };
+  }, [id, location]);
 
   if (!service) {
     return (

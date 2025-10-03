@@ -214,10 +214,10 @@ const AnimatedLogo = () => {
   }, []);
 
   return (
-    <a className="logo-link" href="/" aria-label="Home">
-    <div className="animated-logo-container" ref={logoRef}>
-      {/* Baby Groot - humanoid tree character */}
-      <div className="baby-groot">
+    <a className="logo-link" href="/" aria-label="Home" onClick={(e) => { e.preventDefault(); window.location.href = '/'; }}>
+      <div className="animated-logo-container" ref={logoRef}>
+        {/* Baby Groot - humanoid tree character */}
+        <div className="baby-groot">
         {/* Head - rounded with bark texture */}
         <div className="groot-head">
           <div className="groot-face">

@@ -230,7 +230,7 @@ const Services = () => {
     fragments?: HTMLDivElement[],
     streaks?: HTMLDivElement[]
   ) => {
-    const root = document.getElementById('root') as HTMLElement;
+    const appContent = document.querySelector('.app-content') as HTMLElement;
     gsap.set(document.body, { perspective: 1200 });
     
     // Calculate center of the photo (where the vacuum leads to)
@@ -367,7 +367,7 @@ const Services = () => {
     }
 
     // CRITICAL: Make the entire website get sucked INTO the photo's position
-    tl.to(root, {
+    tl.to(appContent, {
       transformOrigin: `${photoCenterX}px ${photoCenterY}px`,
       x: 0,
       y: 0,
@@ -631,12 +631,14 @@ const Services = () => {
               </div>
               
               <div className="portfolio-image-preview">
-                <img 
-                  src="" 
-                  alt={service.title}
-                  className="preview-image"
-                  data-service-id={service.id}
-                />
+                {service.image && (
+                  <img 
+                    src={service.image} 
+                    alt={service.title}
+                    className="preview-image"
+                    data-service-id={service.id}
+                  />
+                )}
               </div>
             </Link>
           ))}
