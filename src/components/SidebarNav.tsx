@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import '../styles/components/SidebarNav.css';
 
 type Section = {
@@ -17,42 +17,49 @@ const sections: Section[] = [
 
 const SidebarNav = () => {
   const [active, setActive] = useState<string>('home');
+  const visibilityMapRef = useRef<Record<string, number>>({});
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY + window.innerHeight / 2;
-      
-      // Find which section is currently in view
-      for (let i = sections.length - 1; i >= 0; i--) {
-        const section = document.getElementById(sections[i].id);
-        if (section) {
-          const sectionTop = section.offsetTop;
-          if (scrollPosition >= sectionTop) {
-            setActive(sections[i].id);
-            break;
-          }
+    // Use IntersectionObserver to track which section has largest visible area
+    const options: IntersectionObserverInit = {
+      root: null,
+      rootMargin: '0px 0px -30% 0px', // bias toward content around upper-middle viewport
+      threshold: Array.from({ length: 21 }, (_, i) => i / 20), // 0..1 step .05
+    };
+
+    observerRef.current = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        const id = entry.target.id;
+        // Intersection ratio approximates how much of the section is in view
+        visibilityMapRef.current[id] = entry.intersectionRatio;
+      });
+
+      // Find visible section with highest ratio; fallback to last known active if ties
+      let maxId = active;
+      let maxRatio = -1;
+      for (const s of sections) {
+        const r = visibilityMapRef.current[s.id] ?? 0;
+        if (r > maxRatio) {
+          maxRatio = r;
+          maxId = s.id;
         }
       }
-    };
 
-    // Initial check
-    handleScroll();
-    
-    // Add scroll listener with throttle
-    let timeoutId: number | null = null;
-    const throttledScroll = () => {
-      if (timeoutId === null) {
-        timeoutId = window.setTimeout(() => {
-          handleScroll();
-          timeoutId = null;
-        }, 100);
+      if (maxId && maxId !== active) {
+        setActive(maxId);
       }
-    };
+    }, options);
 
-    window.addEventListener('scroll', throttledScroll);
+    // Observe all sections that exist in DOM
+    sections.forEach((s) => {
+      const el = document.getElementById(s.id);
+      if (el) observerRef.current?.observe(el);
+    });
+
     return () => {
-      window.removeEventListener('scroll', throttledScroll);
-      if (timeoutId) clearTimeout(timeoutId);
+      observerRef.current?.disconnect();
+      observerRef.current = null;
     };
   }, []);
 

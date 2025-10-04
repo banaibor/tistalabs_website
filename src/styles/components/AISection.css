@@ -2,15 +2,26 @@
 .ai-section {
 	min-height: 100vh;
 	padding: 120px 2rem;
-	background: linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.95)), 
-							url('https://images.unsplash.com/photo-1677442136019-21780ecad995?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80') center/cover;
+	background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.8));
 	position: relative;
+	overflow: hidden;
+}
+
+/* Full-bleed Lottie background */
+.ai-bg-animation {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.35; /* subtle so content remains readable */
 }
 
 .ai-container {
 	max-width: 1400px;
 	margin: 0 auto;
 	width: 100%;
+	position: relative;
+	z-index: 2;
 }
 
 .ai-header {
@@ -73,14 +84,72 @@
 
 .ai-metrics {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-	gap: 3rem;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 2rem;
 }
 
 .metric {
+	position: relative;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	padding: 2rem 1.5rem;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 8px;
+	background: rgba(255, 255, 255, 0.02);
+	cursor: pointer;
+	transition: all 0.4s ease;
+	overflow: hidden;
+	min-height: 160px;
+	justify-content: center;
+}
+
+/* ROI Card - Medium teal background for animation visibility */
+.metric-roi:hover {
+	transform: translateY(-5px);
+	border-color: rgba(34, 211, 238, 0.6);
+	box-shadow: 0 15px 40px rgba(34, 211, 238, 0.3);
+	background: rgba(34, 211, 238, 0.15);
+}
+
+/* Enterprise Success Rate - Dark background for animation visibility */
+.metric-enterprise:hover {
+	transform: translateY(-5px);
+	border-color: rgba(167, 139, 250, 0.6);
+	box-shadow: 0 15px 40px rgba(167, 139, 250, 0.3);
+	background: rgba(0, 0, 0, 0.8);
+}
+
+/* Productivity - Light background for animation visibility */
+.metric-productivity:hover {
+	transform: translateY(-5px);
+	border-color: rgba(34, 197, 94, 0.6);
+	box-shadow: 0 15px 40px rgba(34, 197, 94, 0.3);
+	background: rgba(255, 255, 255, 0.95);
+}
+
+
+
+.metric-animation-bg {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	display: none;
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	z-index: 1;
+	transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.metric-content {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	position: relative;
+	z-index: 2;
 }
 
 .metric-number {
@@ -88,65 +157,61 @@
 	font-weight: 900;
 	color: #fff;
 	line-height: 1;
+	text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+	transition: all 0.4s ease;
 }
 
 .metric-label {
 	font-size: 0.9rem;
-	color: rgba(255, 255, 255, 0.7);
+	color: rgba(255, 255, 255, 0.9);
 	text-transform: uppercase;
 	letter-spacing: 0.1em;
 	margin-top: 0.5rem;
+	text-align: center;
+	text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+	transition: all 0.4s ease;
 }
 
-.ai-features-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-	gap: 2rem;
-	margin-bottom: 6rem;
+/* ROI Card text - Dark text on medium background */
+.metric-roi:hover .metric-number {
+	color: #1e40af;
+	text-shadow: 0 2px 15px rgba(255, 255, 255, 0.8);
+	font-weight: 900;
 }
 
-.ai-feature-card {
-	background: rgba(255, 255, 255, 0.02);
-	border: 1px solid rgba(255, 255, 255, 0.1);
-	padding: 2.5rem;
-	transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-	cursor: pointer;
-}
-
-.ai-feature-card:hover {
-	transform: translateY(-8px);
-	background: rgba(167, 139, 250, 0.05);
-	border-color: rgba(167, 139, 250, 0.3);
-	box-shadow: 0 20px 60px rgba(167, 139, 250, 0.1);
-}
-
-.feature-icon {
-	font-size: 3rem;
-	margin-bottom: 1.5rem;
-}
-
-.ai-feature-card h4 {
-	font-size: 1.25rem;
+.metric-roi:hover .metric-label {
+	color: #1e40af;
+	text-shadow: 0 1px 8px rgba(255, 255, 255, 0.6);
 	font-weight: 700;
-	color: #fff;
-	margin-bottom: 1rem;
-	text-transform: uppercase;
-	letter-spacing: 0.05em;
 }
 
-.ai-feature-card p {
-	color: rgba(255, 255, 255, 0.7);
-	line-height: 1.6;
-	margin-bottom: 1.5rem;
+/* Enterprise Success Rate text - Light text on dark background */
+.metric-enterprise:hover .metric-number {
+	color: #f8fafc;
+	text-shadow: 0 2px 15px rgba(0, 0, 0, 0.9);
+	font-weight: 900;
 }
 
-.feature-metric {
-	font-size: 0.85rem;
-	color: #a78bfa;
-	font-weight: 600;
-	text-transform: uppercase;
-	letter-spacing: 0.1em;
+.metric-enterprise:hover .metric-label {
+	color: #f1f5f9;
+	text-shadow: 0 1px 8px rgba(0, 0, 0, 0.7);
+	font-weight: 700;
 }
+
+/* Productivity text - Very dark text on light background */
+.metric-productivity:hover .metric-number {
+	color: #0f172a;
+	text-shadow: 0 2px 15px rgba(255, 255, 255, 0.5);
+	font-weight: 900;
+}
+
+.metric-productivity:hover .metric-label {
+	color: #1e293b;
+	text-shadow: 0 1px 8px rgba(255, 255, 255, 0.3);
+	font-weight: 700;
+}
+
+
 
 .ai-industries {
 	margin-bottom: 6rem;
@@ -254,19 +319,16 @@
 	}
 
 	.ai-metrics {
-		grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-		gap: 2rem;
-	}
-
-	.ai-features-grid {
 		grid-template-columns: 1fr;
 		gap: 1.5rem;
-		margin-bottom: 4rem;
 	}
 
-	.ai-feature-card {
-		padding: 2rem;
+	.metric {
+		min-height: 140px;
+		padding: 1.5rem 1rem;
 	}
+
+
 
 	.ai-industries {
 		margin-bottom: 4rem;

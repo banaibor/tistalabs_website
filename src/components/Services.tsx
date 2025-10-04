@@ -237,30 +237,54 @@ const Services = () => {
     const photoCenterX = photoRect.left + photoRect.width / 2;
     const photoCenterY = photoRect.top + photoRect.height / 2;
     
-    const dx = photoCenterX / window.innerWidth - 0.5;
-    const dy = photoCenterY / window.innerHeight - 0.5;
-    const tl = gsap.timeline({ onComplete });
+  const tl = gsap.timeline({ onComplete });
     
-    // Intensify the dark vortex background centered on photo
+    // CRITICAL: Make the ghost photo truly detached with highest z-index
+    // This ensures it stays fixed while everything else gets sucked into it
+    if (ghost) {
+      gsap.set(ghost, {
+        position: 'fixed',
+        zIndex: 99999,
+        left: photoRect.left,
+        top: photoRect.top,
+        width: photoRect.width,
+        height: photoRect.height,
+        pointerEvents: 'none',
+        opacity: 1, // Ensure it's always visible
+        visibility: 'visible', // Ensure visibility
+      });
+    }
+    
+    // Intensify the dark vortex background centered on photo with pulsing rings
     tl.to(overlay, { 
-      background: `radial-gradient(circle at ${photoCenterX}px ${photoCenterY}px, rgba(34,211,238,0.2), rgba(0,0,0,0.95))`, 
+      background: `radial-gradient(circle at ${photoCenterX}px ${photoCenterY}px, 
+        rgba(34,211,238,0.4) 0%, 
+        rgba(167,139,250,0.3) 15%, 
+        rgba(0,0,0,0.8) 40%, 
+        rgba(0,0,0,0.98) 100%)`, 
       duration: 0.7, 
       ease: 'power2.out' 
     }, 0);
 
-    // Make the photo EXPAND as it becomes the portal (vacuum mouth)
+    // KEEP the photo in its EXACT position (no movement) - it's the vacuum portal
+    // Add glowing border and pulsing effect to make it look like an active vortex
     if (ghost) {
       tl.to(ghost, {
-        left: photoCenterX - (photoRect.width * 2),
-        top: photoCenterY - (photoRect.height * 2),
-        width: photoRect.width * 4,
-        height: photoRect.height * 4,
-        scale: 1.2,
-        borderRadius: '50%',
-        boxShadow: '0 0 200px rgba(34,211,238,1), 0 0 300px rgba(167,139,250,0.8), inset 0 0 100px rgba(0,0,0,0.5)',
+        boxShadow: '0 0 80px rgba(34,211,238,0.8), 0 0 120px rgba(167,139,250,0.6), inset 0 0 40px rgba(34,211,238,0.3)',
+        scale: 1.05, // Slight pulse
         duration: 0.85,
         ease: 'power2.out'
       }, 0);
+      
+      // Pulsing effect
+      tl.to(ghost, {
+        scale: 1.0,
+        boxShadow: '0 0 100px rgba(34,211,238,1), 0 0 150px rgba(167,139,250,0.8), inset 0 0 50px rgba(34,211,238,0.4)',
+        duration: 0.4,
+        ease: 'power2.inOut',
+        yoyo: true,
+        repeat: 1
+      }, 0.2);
     }
 
     // Primary ring expansion from photo center
@@ -286,11 +310,11 @@ const Services = () => {
       tl.to(swirl, { 
         left: photoCenterX,
         top: photoCenterY,
-        scale: 2.2, 
-        rotate: 720, 
-        opacity: 0.6, 
+        scale: 2.5, 
+        rotate: 1080, // 3 full rotations
+        opacity: 0.8, 
         duration: 0.9, 
-        ease: 'power2.inOut' 
+        ease: 'power1.in' // Accelerating spin
       }, 0);
     }
 
@@ -299,11 +323,11 @@ const Services = () => {
       tl.to(vortex, {
         left: photoCenterX,
         top: photoCenterY,
-        scale: 1.5,
-        rotate: -180,
-        opacity: 0.4,
-        duration: 0.85,
-        ease: 'power2.out'
+        scale: 2.0,
+        rotate: -540, // Counter-rotating for vortex effect
+        opacity: 0.6,
+        duration: 0.9,
+        ease: 'power1.in'
       }, 0);
     }
 
@@ -366,20 +390,41 @@ const Services = () => {
       });
     }
 
-    // CRITICAL: Make the entire website get sucked INTO the photo's position
-    tl.to(appContent, {
-      transformOrigin: `${photoCenterX}px ${photoCenterY}px`,
-      x: 0,
-      y: 0,
-      scale: 0.05,
-      rotationX: dy * 15,
-      rotationY: -dx * 15,
-      rotationZ: (dx - dy) * 20,
-      z: -400,
-      filter: 'blur(5px) saturate(1.15) brightness(0.85)',
-      duration: 0.8,
-      ease: 'power3.in',
-    }, 0.1);
+    // NEW: Suck only text into the photo while layout stays intact
+    // Target text-like elements inside the services section (fallback to app-content)
+    const host = (document.querySelector('.services') as HTMLElement) || appContent;
+    const textSelectors = [
+      'h1','h2','h3','h4','h5','h6',
+      'p','li','small','strong','em',
+      '.section-tag','.portfolio-category','.portfolio-title',
+      '.portfolio-tags .tag','.tag','.metric .value','.metric .label',
+      '.service-card a','a.cta','button .label'
+    ].join(',');
+
+    const textNodes = Array.from(host.querySelectorAll(textSelectors)) as HTMLElement[];
+    // Prepare elements for smooth transforms
+    textNodes.forEach(el => gsap.set(el, { willChange: 'transform, opacity, filter' }));
+
+    // Animate each text element toward the photo center with slight swirl and blur
+    textNodes.forEach((el, i) => {
+      const r = el.getBoundingClientRect();
+      const cx = r.left + r.width / 2;
+      const cy = r.top + r.height / 2;
+      const dxPx = photoCenterX - cx;
+      const dyPx = photoCenterY - cy;
+      const spin = (Math.random() * 120) - 60;
+      const startAt = 0.08 + (i % 14) * 0.012; // subtle wave
+      tl.to(el, {
+        x: `+=${dxPx}`,
+        y: `+=${dyPx}`,
+        scale: 0.15,
+        rotation: `+=${spin}`,
+        opacity: 0,
+        filter: 'blur(2px)',
+        duration: 0.65 + Math.random() * 0.2,
+        ease: 'power2.in'
+      }, startAt);
+    });
   };
 
   const handleCardClick = (e: React.MouseEvent<HTMLAnchorElement>, serviceId: string) => {
@@ -392,11 +437,16 @@ const Services = () => {
     const imgEl = preview?.querySelector('img') as HTMLImageElement | null;
     const src = imgEl?.src || getRandomServiceImage(serviceId);
 
-    // Freeze the preview image in place and visible during warp
+    // DON'T hide the in-layout preview - keep it visible as backup
+    // The ghost will be positioned on top with higher z-index
     if (preview) {
       gsap.killTweensOf(preview);
-      gsap.set(preview, { opacity: 1 });
+      // Keep it visible but disable interactions
+      gsap.set(preview, { pointerEvents: 'none' });
     }
+
+    // Disable interaction on the original card but keep it visible so its text can animate
+    gsap.set(card, { pointerEvents: 'none' });
 
     // Compute rect and clamp origin inside the photo (whirlpool center inside image)
     const rect = (preview || card).getBoundingClientRect();
@@ -420,9 +470,15 @@ const Services = () => {
       overlay, 
       rect,
       () => {
-        navigate(`/services/${serviceId}`, { state: { warpOrigin: { x: photoCenterX, y: photoCenterY } } });
-        // Remove overlay after a short delay to avoid flicker during route swap
-        setTimeout(() => overlay.remove(), 400);
+        // Keep overlay and ghost so the detail page can expand text from the same photo and then fade it out
+        navigate(`/services/${serviceId}`, { 
+          state: { 
+            warpOrigin: { x: photoCenterX, y: photoCenterY }, 
+            keepOverlay: true,
+            keepGhost: true,
+            ghostSrc: src
+          } 
+        });
         setWarping(false);
       },
       ghost as HTMLDivElement,

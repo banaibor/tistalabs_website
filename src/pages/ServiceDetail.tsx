@@ -23,8 +23,20 @@ const ServiceDetail = () => {
     }
     gsap.set(document.body, { clearProps: 'perspective' });
     
+    // Immediately ensure all text elements are properly displayed
+    const textHost = document.querySelector('.service-page') as HTMLElement | null;
+    if (textHost) {
+      const textNodes = Array.from(textHost.querySelectorAll('h1,h2,h3,h4,h5,h6,p,li,small,strong,em,.chip,.metric .value,.metric .label,.uc-body,.feature-list li')) as HTMLElement[];
+      textNodes.forEach((el) => {
+        gsap.set(el, { clearProps: 'all' });
+      });
+    }
+    
     // Reverse-pop from warp origin (photo center) to feel like emerging from the portal
     const origin = location?.state?.warpOrigin as { x: number; y: number } | undefined;
+    const keepOverlay = !!location?.state?.keepOverlay;
+    const keepGhost = !!location?.state?.keepGhost;
+    
     if (origin && appContent) {
       // Apply perspective to body but transform to app-content (which doesn't contain navbar)
       gsap.set(document.body, { perspective: 1200 });
@@ -56,6 +68,112 @@ const ServiceDetail = () => {
           gsap.set(appContent, { clearProps: 'all' });
         }
       });
+
+      // Find the ghost photo and ensure it stays visible during text animation
+      const ghost = document.querySelector('.warp-ghost') as HTMLElement | null;
+      if (ghost && keepGhost) {
+        // Keep ghost visible and pulsing as the portal
+        gsap.set(ghost, {
+          zIndex: 99999,
+          opacity: 1,
+          visibility: 'visible'
+        });
+        
+        // Add portal glow effect during text emergence
+        gsap.to(ghost, {
+          boxShadow: '0 0 120px rgba(34,211,238,1), 0 0 180px rgba(167,139,250,0.8), inset 0 0 60px rgba(34,211,238,0.5)',
+          duration: 0.8,
+          ease: 'power2.out'
+        });
+      }
+
+      // Animate service text emerging from the photo portal
+      const textHost = document.querySelector('.service-page') as HTMLElement | null;
+      if (textHost) {
+        // Wait for DOM to be ready before querying text elements
+        setTimeout(() => {
+          const textNodes = Array.from(textHost.querySelectorAll('h1,h2,h3,h4,h5,h6,p,li,small,strong,em,.chip,.metric .value,.metric .label,.uc-body,.feature-list li')) as HTMLElement[];
+          textNodes.forEach((el, i) => {
+            // First, ensure elements are properly reset
+            gsap.set(el, { clearProps: 'all' });
+            
+            // Calculate displacement from portal center
+            const rect = el.getBoundingClientRect();
+            const elCenterX = rect.left + rect.width / 2;
+            const elCenterY = rect.top + rect.height / 2;
+            const dx = origin.x - elCenterX;
+            const dy = origin.y - elCenterY;
+            
+            // Set initial state (coming from portal)
+            gsap.set(el, {
+              x: dx,
+              y: dy,
+              scale: 0.15,
+              rotation: (Math.random() * 20 - 10),
+              opacity: 0,
+              filter: 'blur(3px)',
+              transformOrigin: 'center center'
+            });
+            
+            // Animate to final position with proper cleanup
+            gsap.to(el, {
+              x: 0,
+              y: 0,
+              scale: 1,
+              rotation: 0,
+              opacity: 1,
+              filter: 'blur(0px)',
+              duration: 0.7 + Math.random() * 0.3,
+              ease: 'power2.out',
+              delay: 0.1 + (i % 12) * 0.025,
+              onComplete: () => {
+                // Clear all transforms after animation completes
+                gsap.set(el, { clearProps: 'all' });
+              }
+            });
+          });
+        }, 100); // Increased delay to ensure DOM is ready
+      }
+
+      // Handle overlay and ghost cleanup after text animation completes
+      if (keepOverlay) {
+        const overlay = document.querySelector('.warp-overlay') as HTMLElement | null;
+        if (overlay) {
+          // Fade out overlay after text animation, but keep ghost visible longer
+          gsap.to(overlay, { 
+            opacity: 0, 
+            duration: 0.4, 
+            delay: 1.2, 
+            onComplete: () => {
+              // Remove overlay but preserve ghost for a bit longer if needed
+              if (ghost && keepGhost) {
+                // Gradually fade ghost after text is fully emerged
+                gsap.to(ghost, {
+                  opacity: 0,
+                  scale: 0.8,
+                  duration: 0.6,
+                  delay: 0.3,
+                  ease: 'power2.out',
+                  onComplete: () => overlay.remove()
+                });
+              } else {
+                overlay.remove();
+              }
+            }
+          });
+        }
+      }
+    } else {
+      // If no warp origin, ensure all text elements are properly displayed
+      const textHost = document.querySelector('.service-page') as HTMLElement | null;
+      if (textHost) {
+        setTimeout(() => {
+          const textNodes = Array.from(textHost.querySelectorAll('h1,h2,h3,h4,h5,h6,p,li,small,strong,em,.chip,.metric .value,.metric .label,.uc-body,.feature-list li')) as HTMLElement[];
+          textNodes.forEach((el) => {
+            gsap.set(el, { clearProps: 'all' });
+          });
+        }, 50);
+      }
     }
     
     // Cleanup function to ensure transforms are cleared
@@ -64,6 +182,15 @@ const ServiceDetail = () => {
         gsap.set(appContent, { clearProps: 'all' });
       }
       gsap.set(document.body, { clearProps: 'perspective' });
+      
+      // Also cleanup any text transforms
+      const textHost = document.querySelector('.service-page') as HTMLElement | null;
+      if (textHost) {
+        const textNodes = Array.from(textHost.querySelectorAll('h1,h2,h3,h4,h5,h6,p,li,small,strong,em,.chip,.metric .value,.metric .label,.uc-body,.feature-list li')) as HTMLElement[];
+        textNodes.forEach((el) => {
+          gsap.set(el, { clearProps: 'all' });
+        });
+      }
     };
   }, [id, location]);
 
