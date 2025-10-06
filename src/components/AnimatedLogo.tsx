@@ -6,13 +6,26 @@ const AnimatedLogo = () => {
   const logoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!logoRef.current) return;
+    
     // Run once: build the logo, celebrate, and hold pose (no loop)
     const timeline = gsap.timeline({ repeat: 0 });
     
+    // Scope all selectors to this component instance
+    const container = logoRef.current;
+    const logoLetters = container.querySelectorAll('.logo-letter');
+    const babyGroot = container.querySelector('.baby-groot');
+    const carriedLetter = container.querySelector('.carried-letter');
+    
+    // Safety check - only proceed if all required elements exist
+    if (!babyGroot || !carriedLetter || logoLetters.length === 0) {
+      return;
+    }
+    
     // Initially hide all letters and Baby Groot
-  gsap.set('.logo-letter', { opacity: 0, y: 15, scale: 0.7, rotation: 0 });
-  gsap.set('.baby-groot', { opacity: 0, x: -40, scale: 0 });
-  gsap.set('.carried-letter', { opacity: 0, scale: 0, xPercent: -50, yPercent: -100 });
+    gsap.set(logoLetters, { opacity: 0, y: 15, scale: 0.7, rotation: 0 });
+    gsap.set(babyGroot, { opacity: 0, x: -40, scale: 0 });
+    gsap.set(carriedLetter, { opacity: 0, scale: 0, xPercent: -50, yPercent: -100 });
     
     const letters = ['T', 'I', 'S', 'T', 'A', 'L', 'A', 'B', 'S'];
     // Random rotations for each letter placement (Groot's imperfect placement)
@@ -22,7 +35,7 @@ const AnimatedLogo = () => {
     // Animation sequence: Baby Groot appears and builds each letter
     timeline
       // Baby Groot appears with a waddle
-      .to('.baby-groot', {
+      .to(babyGroot, {
         opacity: 1,
         scale: 1,
         x: -10, // Start closer to the first letter position
@@ -31,7 +44,7 @@ const AnimatedLogo = () => {
       })
       
       // Groot does a little dance before starting
-      .to('.baby-groot', {
+      .to(babyGroot, {
         rotation: -10,
         duration: 0.2,
         yoyo: true,
@@ -40,39 +53,41 @@ const AnimatedLogo = () => {
       
     // Build each letter sequentially with Groot's personality
     letters.forEach((letter, index) => {
-      const letterClass = `.letter-${index}`;
+      const letterEl = container.querySelector(`.letter-${index}`);
+      const grootArms = container.querySelector('.groot-arms');
       
-      const container = logoRef.current;
+      // Safety check - skip if elements don't exist
+      if (!letterEl || !grootArms) return;
+      
       const letterRotation = letterRotations[index];
       const yOffset = letterYOffsets[index];
       
       timeline
         // Groot picks up letter first (reaches up and grabs it)
-        .to('.groot-arms', {
+        .to(grootArms, {
           rotation: -20,
           duration: 0.3,
           onStart: () => {
             // Bring Groot to front while carrying letters
-            gsap.set('.baby-groot', { zIndex: 15 });
+            if (babyGroot) gsap.set(babyGroot, { zIndex: 15 });
             // Set the character for the carried overlay
-            const carriedLetter = document.querySelector('.carried-letter');
-            if (carriedLetter) (carriedLetter as HTMLElement).textContent = letter;
-            gsap.set('.carried-letter', { opacity: 1, scale: 1 });
+            if (carriedLetter) {
+              (carriedLetter as HTMLElement).textContent = letter;
+              gsap.set(carriedLetter, { opacity: 1, scale: 1 });
+            }
           }
         })
         
         // Groot waddles to position while carrying the letter
-        .to('.baby-groot', {
+        .to(babyGroot, {
           x: () => {
             if (!container) return 0;
             const containerRect = container.getBoundingClientRect();
-            const letterEl = document.querySelector(letterClass) as HTMLElement | null;
-            const handEl = document.querySelector('.groot-hand.right') as HTMLElement | null;
-            const grootEl = document.querySelector('.baby-groot') as HTMLElement | null;
-            if (!letterEl || !handEl || !grootEl) return 0;
+            const handEl = container.querySelector('.groot-hand.right') as HTMLElement | null;
+            if (!letterEl || !handEl || !babyGroot) return 0;
             const letterRect = letterEl.getBoundingClientRect();
             const handRect = handEl.getBoundingClientRect();
-            const grootRect = grootEl.getBoundingClientRect();
+            const grootRect = babyGroot.getBoundingClientRect();
             const letterCenterX = letterRect.left + letterRect.width / 2 - containerRect.left;
             // Aim a bit toward the fingertips so it visually reads as gripping from below-right
             const handTargetX = (handRect.left + handRect.width * 0.75) - grootRect.left;
@@ -83,16 +98,16 @@ const AnimatedLogo = () => {
           onUpdate: function() {
             // Letter moves with Groot's right hand while walking
             const containerRect = container?.getBoundingClientRect();
-            const handEl = document.querySelector('.groot-hand.right') as HTMLElement | null;
-            if (containerRect && handEl) {
+            const handEl = container.querySelector('.groot-hand.right') as HTMLElement | null;
+            if (containerRect && handEl && babyGroot && carriedLetter) {
               const handRect = handEl.getBoundingClientRect();
               const handX = handRect.left + handRect.width * 0.75 - containerRect.left;
               // Position just above the palm so the letter bottom sits on the hand
               const handY = handRect.top + handRect.height * 0.15 - containerRect.top;
               const progress = this.progress();
               const bounce = Math.sin(progress * Math.PI * 6) * 1.5;
-              gsap.set('.baby-groot', { y: bounce });
-              gsap.set('.carried-letter', {
+              gsap.set(babyGroot, { y: bounce });
+              gsap.set(carriedLetter, {
                 x: handX,
                 y: handY,
                 rotation: (Math.random() * 10 - 5) + letterRotation * 0.25
@@ -102,13 +117,13 @@ const AnimatedLogo = () => {
         })
         
         // Groot carefully places the letter (reaches down)
-        .to('.groot-arms', {
+        .to(grootArms, {
           rotation: 15,
           duration: 0.4
         })
         
         // Groot struggles a bit to get it perfect (cute adjustment)
-        .to('.baby-groot', {
+        .to(babyGroot, {
           rotation: letterRotation * 0.3,
           duration: 0.2,
           yoyo: true,
@@ -120,39 +135,37 @@ const AnimatedLogo = () => {
           duration: 0.35,
           ease: 'back.out(1.5)',
           onStart: () => {
-            if (!container) return;
+            if (!container || !letterEl || !carriedLetter) return;
             const containerRect = container.getBoundingClientRect();
-            const letterEl = document.querySelector(letterClass) as HTMLElement | null;
-            if (!letterEl) return;
             const lr = letterEl.getBoundingClientRect();
             const cx = lr.left + lr.width / 2 - containerRect.left;
             const cy = lr.bottom - containerRect.top; // bottom center for under-support
-            gsap.set('.carried-letter', { x: cx, y: cy });
-            gsap.set(letterClass, { opacity: 1, y: yOffset, scale: 1, rotation: letterRotation });
+            gsap.set(carriedLetter, { x: cx, y: cy });
+            gsap.set(letterEl, { opacity: 1, y: yOffset, scale: 1, rotation: letterRotation });
           },
           onComplete: () => {
-            gsap.set('.carried-letter', { opacity: 0 });
+            if (carriedLetter) gsap.set(carriedLetter, { opacity: 0 });
           }
         })
         
         // Groot's arms return to normal position and he steps back (lower z-index)
-        .to('.groot-arms', {
+        .to(grootArms, {
           rotation: 0,
           duration: 0.4,
           onStart: () => {
             // Move Groot behind the letters once placed
-            gsap.set('.baby-groot', { zIndex: 3 });
+            if (babyGroot) gsap.set(babyGroot, { zIndex: 3 });
           }
         })
         
         // Groot celebrates with a little bounce and arm raise
-        .to('.baby-groot', {
+        .to(babyGroot, {
           y: -8,
           duration: 0.2,
           yoyo: true,
           repeat: 1
         })
-        .to('.groot-arms', {
+        .to(grootArms, {
           rotation: 30,
           duration: 0.15,
           yoyo: true,
@@ -160,57 +173,67 @@ const AnimatedLogo = () => {
         }, '-=0.2');
     });
     
-        // Final celebration — non-looping; celebrate clearly and hold pose
-        timeline
-          // quick celebratory wiggle
-          .to('.baby-groot', {
-            rotation: 15,
-            duration: 0.2,
-            yoyo: true,
-            repeat: 3
-          }, '+=0.3')
-          // logo glow punch-up
-          .to('.logo-text', {
-            textShadow: '0 0 25px rgba(139, 195, 74, 0.8)',
-            duration: 0.4
-          })
-          .to('.logo-text', {
-            textShadow: '0 0 10px rgba(139, 195, 74, 0.4)',
-            duration: 0.4
-          })
-          // move Groot slightly to the right side and hold
-          .to('.baby-groot', {
-            x: "+=30",
-            y: 0,
-            rotation: 0,
-            duration: 0.6,
-            ease: 'power1.inOut'
-          })
-          // reset wrapper arms rotation to a neutral baseline
-          .to('.groot-arms', { rotation: 0, duration: 0.001 })
-          // raise right arm for a wave
-          .to('.groot-arm.right', {
-            rotation: -60,
-            transformOrigin: 'top center',
-            duration: 0.25
-          })
-          // wave motion 3x
-          .to('.groot-arm.right', {
-            rotation: -20,
-            duration: 0.22,
-            yoyo: true,
-            repeat: 3
-          })
-          // happy bounce
-          .to('.baby-groot', {
-            y: -6,
-            duration: 0.2,
-            yoyo: true,
-            repeat: 2
-          })
-          // hold a pleasant pose with arm slightly raised
-          .to('.groot-arm.right', { rotation: -35, duration: 0.15 });
-
+    // Final celebration — non-looping; celebrate clearly and hold pose
+    const logoText = container.querySelector('.logo-text');
+    const grootArmsMain = container.querySelector('.groot-arms');
+    const grootArmRight = container.querySelector('.groot-arm.right');
+    
+    if (logoText && grootArmsMain && grootArmRight) {
+      timeline
+        // quick celebratory wiggle
+        .to(babyGroot, {
+          rotation: 15,
+          duration: 0.2,
+          yoyo: true,
+          repeat: 3
+        }, '+=0.3')
+        // logo glow punch-up
+        .to(logoText, {
+          textShadow: '0 0 25px rgba(139, 195, 74, 0.8)',
+          duration: 0.4
+        })
+        .to(logoText, {
+          textShadow: '0 0 10px rgba(139, 195, 74, 0.4)',
+          duration: 0.4
+        })
+        // move Groot slightly to the right side and hold
+        .to(babyGroot, {
+          x: "+=30",
+          y: 0,
+          rotation: 0,
+          duration: 0.6,
+          ease: 'power1.inOut'
+        })
+        // reset wrapper arms rotation to a neutral baseline
+        .to(grootArmsMain, { rotation: 0, duration: 0.001 })
+        // raise right arm for a wave
+        .to(grootArmRight, {
+          rotation: -60,
+          transformOrigin: 'top center',
+          duration: 0.25
+        })
+        // wave motion 3x
+        .to(grootArmRight, {
+          rotation: -20,
+          duration: 0.22,
+          yoyo: true,
+          repeat: 3
+        })
+        // happy bounce
+        .to(babyGroot, {
+          y: -6,
+          duration: 0.2,
+          yoyo: true,
+          repeat: 2
+        })
+        // hold a pleasant pose with arm slightly raised
+        .to(grootArmRight, { rotation: -35, duration: 0.15 });
+    }
+    
+    // Cleanup function to prevent errors when component unmounts
+    return () => {
+      timeline.kill();
+    };
   }, []);
 
   return (

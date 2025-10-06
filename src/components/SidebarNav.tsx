@@ -19,6 +19,7 @@ const SidebarNav = () => {
   const [active, setActive] = useState<string>('home');
   const visibilityMapRef = useRef<Record<string, number>>({});
   const observerRef = useRef<IntersectionObserver | null>(null);
+  const ignoreUpdatesRef = useRef<number | null>(null);
 
   useEffect(() => {
     // Use IntersectionObserver to track which section has largest visible area
@@ -35,8 +36,13 @@ const SidebarNav = () => {
         visibilityMapRef.current[id] = entry.intersectionRatio;
       });
 
-      // Find visible section with highest ratio; fallback to last known active if ties
-      let maxId = active;
+      // If we're ignoring updates due to a recent click, skip updating
+      if (ignoreUpdatesRef.current && Date.now() - ignoreUpdatesRef.current < 750) {
+        return;
+      }
+
+      // Find visible section with highest ratio
+      let maxId = sections[0].id;
       let maxRatio = -1;
       for (const s of sections) {
         const r = visibilityMapRef.current[s.id] ?? 0;
@@ -46,9 +52,8 @@ const SidebarNav = () => {
         }
       }
 
-      if (maxId && maxId !== active) {
-        setActive(maxId);
-      }
+      // Only update when the computed max is different from current active
+      setActive((current) => (maxId !== current ? maxId : current));
     }, options);
 
     // Observe all sections that exist in DOM
@@ -66,6 +71,8 @@ const SidebarNav = () => {
   const scrollWithOffset = (id: string) => {
     const el = document.getElementById(id);
     if (!el) return;
+    // Temporarily ignore observer updates so the click scroll doesn't get overridden
+    ignoreUpdatesRef.current = Date.now();
     const rect = el.getBoundingClientRect();
     const scrollTop = window.scrollY || document.documentElement.scrollTop;
     const navbar = document.querySelector('.navbar') as HTMLElement | null;
@@ -86,7 +93,20 @@ const SidebarNav = () => {
                 className="sidebar-item"
                 aria-label={s.label}
                 aria-current={isActive ? 'true' : undefined}
-                onClick={() => scrollWithOffset(s.id)}
+                onClick={(e) => {
+                  // Immediately reflect the user's click in the sidebar UI
+                  setActive(s.id);
+
+                  // If this was a pointer/mouse click (detail > 0), remove focus so :focus styles
+                  // don't remain and cause a second item to appear active. Keep focus for keyboard activation (detail===0).
+                  if ((e as React.MouseEvent).detail && (e as React.MouseEvent).detail > 0) {
+                    (e.currentTarget as HTMLButtonElement).blur();
+                  }
+
+                  // Temporarily ignore observer updates so the click scroll doesn't get overridden
+                  ignoreUpdatesRef.current = Date.now();
+                  scrollWithOffset(s.id);
+                }}
               >
                 <span className="dot" aria-hidden></span>
                 <span className="label">{s.label}</span>

@@ -14,6 +14,7 @@ import ServiceDetail from './pages/ServiceDetail.tsx';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { gsap } from 'gsap';
+import { SafeDOM } from './utils/SafeDOM';
 import './App.css';
 
 function ScrollOnRouteState() {
@@ -42,6 +43,22 @@ function App() {
       gsap.set(content, { clearProps: 'all' });
     }
     gsap.set(document.body, { clearProps: 'perspective' });
+    // Proactive cleanup: remove any lingering warp overlays/ghosts on route change
+    try {
+      SafeDOM.safeQueryAndCleanup('.warp-overlay');
+      SafeDOM.safeQueryAndCleanup('[data-warp-overlay="true"]');
+      SafeDOM.safeQueryAndCleanup('.warp-ghost');
+      // Also unhide any sections that may have been temporarily hidden by animations
+      document.querySelectorAll('.hero, .services, .ai-section, .automation-section, #automation')
+        .forEach((el) => {
+          const node = el as HTMLElement;
+          try {
+            node.style.removeProperty('visibility');
+            node.style.removeProperty('opacity');
+            node.style.removeProperty('pointer-events');
+          } catch {}
+        });
+    } catch {}
   }, [location.pathname]);
   
   return (

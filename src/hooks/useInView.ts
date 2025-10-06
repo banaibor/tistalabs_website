@@ -27,7 +27,8 @@ export default function useInView<T extends HTMLElement = HTMLElement>({
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setInView(true);
-            if (once) observer.unobserve(entry.target);
+            // Only unobserve if the node is still connected
+            if (once && entry.target.isConnected) observer.unobserve(entry.target);
           } else if (!once) {
             setInView(false);
           }

@@ -83,8 +83,10 @@
 .lane .note:active { cursor: grabbing; }
 
 /* Reveal animations */
-.reveal { opacity: 0; transform: translateY(16px) scale(0.98); transition: opacity 420ms ease, transform 520ms cubic-bezier(.2,.7,.2,1); will-change: opacity, transform; }
-.reveal.in-view { opacity: 1; transform: translateY(0) scale(1); }
+
+/* DEBUG: Force reveal elements to be visible */
+.reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+.reveal.in-view { opacity: 1 !important; transform: none !important; }
 
 /* Section divider draw-in */
 .section-divider { height: 2px; width: 0; margin: 24px 0; background: linear-gradient(90deg, var(--accent,#22d3ee), rgba(167,139,250,0.6)); border-radius: 999px; transition: width 700ms cubic-bezier(.2,.7,.2,1); }
